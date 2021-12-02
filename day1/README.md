@@ -145,6 +145,68 @@ with open('my_file.txt') as f:
 
 By printing `count` after our for loop is completed, we arrive at our final answer to part 1, _1482_
 
-## How This Changes for Part 2
+## Part 2
 
-TBA
+Considering every single measurement isn't as useful as you expected: there's just too much noise in the data.
+
+Instead, consider sums of a three-measurement sliding window. Again considering the above example:
+
+```md
+199  A      
+200  A B    
+208  A B C  
+210    B C D
+200  E   C D
+207  E F   D
+240  E F G  
+269    F G H
+260      G H
+263        H
+```
+
+Start by comparing the first and second three-measurement windows. The measurements in the first window are marked A (199, 200, 208); their sum is 199 + 200 + 208 = 607. The second window is marked B (200, 208, 210); its sum is 618. The sum of measurements in the second window is larger than the sum of the first, so this first comparison increased.
+
+Your goal now is to count the number of times the sum of measurements in this sliding window increases from the previous sum. So, compare A with B, then compare B with C, then C with D, and so on. Stop when there aren't enough measurements left to create a new three-measurement sum.
+
+In the above example, the sum of each three-measurement window is as follows:
+
+```md
+A: 607 (N/A - no previous sum)
+B: 618 (increased)
+C: 618 (no change)
+D: 617 (decreased)
+E: 647 (increased)
+F: 716 (increased)
+G: 769 (increased)
+H: 792 (increased)
+```
+
+In this example, there are 5 sums that are larger than the previous sum.
+
+Consider sums of a three-measurement sliding window. How many sums are larger than the previous sum?
+
+## What Changes in Our Solution for Part 2
+
+When dealing with the sliding window, there are multiple ways to approach this problem. The solution I opted for is to detemine the groups beforehand, then compare the sums of each group to receive our final count.
+
+A simple way to calculate the groups would be to utilize a for loop similar to the following:
+
+```python
+groups = []
+for pos, val in enumerate(lines[:-2]):
+    total = int(val) + int(lines[pos + 1]) + int(lines[pos + 2])
+    groups.append(total)
+```
+
+This is perfectly acceptable, but we have the opportunity to use one of the most powerful tools that Python has to offer here: [list comprehension](https://www.w3schools.com/python/python_lists_comprehension.asp)!
+
+A simple implementation of list comprehension here might look like the following:
+
+```python
+converted_vals = [int(i) for i in lines]
+groups = [sum(converted_vals[pos : pos + 3]) for pos in range(len(converted_vals[:-2])]
+```
+
+Already, this code is much more concise than the previous iteration. However, we can actually take the code a step futher by implementing a list comprehension _inside of_ a list comprehension! `groups = [sum(int(i) for i in lines[pos : pos + 3]) for pos in range(len(lines) - 2)]` does exactly what we had before condensed into a single line.
+
+When we put everything together from part 1 and update our if statement to compare group sums as opposed to individual values, we can rerun the code and produce a final answer of _1518_.
