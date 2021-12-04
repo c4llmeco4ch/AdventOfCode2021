@@ -27,7 +27,6 @@ for pm in range(line_length):
     if len(most) == 1:
         oxy = int(most[0], 2)
         break
-print("Least:")
 for pl in range(line_length):
     l0, l1 = determine_split(least, pl)
     least = list(filter(lambda x: x[pl] == ('0' if l1 >= l0 else '1'), least))
